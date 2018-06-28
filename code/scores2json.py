@@ -123,17 +123,20 @@ def getNotes(aria, segments):
         time = 0
         start = segments[i][0]
         end = segments[i][1]
-        line = notes.getElementsByOffset(start, end)
-        for n in line:
+        line = part.getElementsByOffset(start, end, mustBeginInSpan=False)
+        notes = line.flat.notesAndRests.stream()
+        for n in notes:
             dur = n.quarterLength
             if dur > 0:
                 if n.isNote:
                     p = n.pitch.midi
+                    if p not in legend.keys():
+                        legend[p] = n.nameWithOctave
                 else:
                     p = 0
                 for i in range(int(dur / unit)):
-                    note = {'time':time, 'pitch':p}
-                    melody['melody'].append(note)
+                    nota = {'time':time, 'pitch':p}
+                    melody['melody'].append(nota)
                     time += unit
         melodies.append(melody)
 
@@ -144,11 +147,16 @@ def getNotes(aria, segments):
 # Main code
 arias = scoreLines(lines)
 
-jsonFile = {'title':'', 'melodies':[]}
+jsonFile = {'title':'', 'melodies':[], 'legend':[]}
+
+legend = {}
 
 for aria in arias.keys():
     melodies = getNotes(aria, arias[aria])
     jsonFile['melodies'].extend(melodies)
+    
+for p in sorted(legend.keys()):
+    jsonFile['legend'].append({'midi':p, 'name':legend[p]})
 
 
 
