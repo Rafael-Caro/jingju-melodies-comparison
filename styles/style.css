@@ -23,11 +23,11 @@ svg {
   /* opacity: 0.2; */
 }
 
-.line:hover {
+/* .line:hover {
   stroke: orangered;
   stroke-width: 12;
   opacity: 1;
-}
+} */
 
 .tonicLine {
   fill: none;

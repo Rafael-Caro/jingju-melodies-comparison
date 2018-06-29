@@ -119,7 +119,7 @@ def getNotes(aria, segments):
     part = findVoiceParts(s)[0]
     notes = part.flat.notesAndRests.stream()
     for i in range(len(segments)):
-        melody = {'id':[ariaName, str(i)], 'melody':[]}
+        melody = {'id':[ariaName[:-4], str(i)], 'melody':[]}
         time = 0
         start = segments[i][0]
         end = segments[i][1]
@@ -139,25 +139,25 @@ def getNotes(aria, segments):
                     upbeat = mo + i
                     if upbeat not in jsonFile['legend']['upbeats']:
                         jsonFile['legend']['upbeats'].append(upbeat)
-    if md > 1:
-        for i in range(1, md):
-            lines.append(mo + i)
-        # Compute the melody
-        notes = line.flat.notesAndRests.stream()
-        for n in notes:
-            dur = n.quarterLength
-            if dur > 0:
-                if n.isNote:
-                    p = n.pitch.midi
-                    if p not in legend.keys():
-                        legend[p] = n.nameWithOctave
-                else:
-                    p = 0
-                for i in range(int(dur / unit)):
-                    nota = {'time':time, 'pitch':p}
-                    melody['melody'].append(nota)
-                    time += unit
-        melodies.append(melody)
+        if md > 1:
+            for i in range(1, md):
+                lines.append(mo + i)
+            # Compute the melody
+            notes = line.flat.notesAndRests.stream()
+            for n in notes:
+                dur = n.quarterLength
+                if dur > 0:
+                    if n.isNote:
+                        p = n.pitch.midi
+                        if p not in legend.keys():
+                            legend[p] = n.nameWithOctave
+                    else:
+                        p = 0
+                    for i in range(int(dur / unit)):
+                        nota = {'time':time, 'pitch':p}
+                        melody['melody'].append(nota)
+                        time += unit
+            melodies.append(melody)
 
     return melodies
 

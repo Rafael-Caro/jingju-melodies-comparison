@@ -4,6 +4,8 @@ var padding = 40;
 
 d3.json("code/melodies.json").then(function(data) {
 
+  console.log(data);
+
   var dataset = data.melodies;
   var legend = data.legend;
 
@@ -77,10 +79,13 @@ d3.json("code/melodies.json").then(function(data) {
 
   var opacity = Math.ceil(10 / dataset.length) / 10;
 
-  var svg = d3.select("body")
-              .append("svg")
-              .attr("width", w)
-              .attr("height", h);
+  var body = d3.select("body");
+
+  var svg = body.append("svg")
+                .attr("width", w)
+                .attr("height", h);
+
+  var form = body.append("form");
 
   // Pitch lines
   svg.selectAll("pitchLines")
@@ -121,13 +126,41 @@ d3.json("code/melodies.json").then(function(data) {
      .attr("y2", h-padding)
      .attr("class", "upbeatLine");
 
+  var checkedLines = [];
+
   // Melodies
   dataset.forEach(function(d) {
     svg.append("path")
        .datum(d.melody)
        .attr("class", "line")
        .attr("d", line)
-       .attr("opacity", opacity);
+       .attr("id", d.id[0] + "-" + (+d.id[1]+1))
+       .attr("opacity", opacity)
+       .on("mouseover", function() {
+         d3.select(this)
+           .style("opacity", 0.8)
+           .style("stroke", "orangered")
+           .style("stroke-width", 12);
+       })
+       .on("mouseout", function() {
+         d3.select(this)
+           .style("opacity", opacity)
+           .style("stroke", "orange")
+           .style("stroke-width", 8);
+       })
+
+    var div = form.append("div");
+
+    div.append("input")
+       .attr("class", "lineCheckbox")
+       .attr("type", "checkbox")
+       .attr("name", d.id[0] + "-" + (+d.id[1]+1))
+       .property("checked", true)
+
+    div.append("label")
+       .text(+d.id[1]+1);
+
+    checkedLines.push(d.id[0] + "-" + (+d.id[1]+1));
   });
 
   svg.append("g")
@@ -139,5 +172,41 @@ d3.json("code/melodies.json").then(function(data) {
     .attr("class", "yAxis")
     .attr("transform", "translate(" + padding + ",0)")
     .call(yAxis);
+
+  d3.selectAll("path.line")
+    .on("mouseover", function() {
+      d3.select(this)
+        .style("opacity", 1)
+        .style("stroke", "orangered")
+        .style("stroke-width", 12);
+    });
+
+  var showCheckedLines = function() {
+    opacity = Math.ceil(10 / checkedLines.length) / 10;
+    d3.selectAll("path.line")
+      .select(function() {
+        var line = d3.select(this);
+        var lineID = line.attr("id")
+        if (checkedLines.includes(lineID)) {
+          line.style("opacity", opacity)
+          line.style("pointer-events", "auto");
+        } else {
+          line.style("opacity", 0)
+          line.style("pointer-events", "none");
+        }
+      });
+    };
+
+  d3.selectAll("input.lineCheckbox")
+    .on("change", function() {
+      var lineID = d3.select(this).attr("name");
+      if (checkedLines.includes(lineID)) {
+        var index = checkedLines.indexOf(lineID);
+        checkedLines.splice(index, 1);
+      } else {
+        checkedLines.push(lineID);
+      };
+      showCheckedLines();
+    });
 
 });
