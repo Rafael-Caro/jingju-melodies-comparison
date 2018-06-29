@@ -124,6 +124,25 @@ def getNotes(aria, segments):
         start = segments[i][0]
         end = segments[i][1]
         line = part.getElementsByOffset(start, end, mustBeginInSpan=False)
+        # Compute the measures and upbeats ticks
+        m0 = line[0].offset
+        mCount = 1
+        for m in line[:-1]:
+            mo = int(m.offset - m0)
+            measure = {'time': mo, 'value': mCount}
+            if measure not in jsonFile['legend']['measures']:
+                jsonFile['legend']['measures'].append(measure)
+            mCount += 1
+            md = m.duration.ordinal
+            if md > 1:
+                for i in range(1, md):
+                    upbeat = mo + i
+                    if upbeat not in jsonFile['legend']['upbeats']:
+                        jsonFile['legend']['upbeats'].append(upbeat)
+    if md > 1:
+        for i in range(1, md):
+            lines.append(mo + i)
+        # Compute the melody
         notes = line.flat.notesAndRests.stream()
         for n in notes:
             dur = n.quarterLength
@@ -147,7 +166,8 @@ def getNotes(aria, segments):
 # Main code
 arias = scoreLines(lines)
 
-jsonFile = {'title':'', 'melodies':[], 'legend':[]}
+jsonFile = {'title':'', 'melodies':[], 'legend':{'pitches':[], 'measures':[],
+            'upbeats':[]}}
 
 legend = {}
 
@@ -156,7 +176,7 @@ for aria in arias.keys():
     jsonFile['melodies'].extend(melodies)
     
 for p in sorted(legend.keys()):
-    jsonFile['legend'].append({'midi':p, 'name':legend[p]})
+    jsonFile['legend']['pitches'].append({'midi':p, 'name':legend[p]})
 
 
 

@@ -1,0 +1,64 @@
+body {
+  width: 800px;
+  margin:0 auto;
+}
+
+h1 {
+  text-align: center;
+}
+
+svg {
+  padding: 10px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: black;
+  /* border-style: inset; */
+}
+
+.line {
+  fill: none;
+  stroke: orange;
+  stroke-width: 8;
+  stroke-linecap: round;
+  /* opacity: 0.2; */
+}
+
+.line:hover {
+  stroke: orangered;
+  stroke-width: 12;
+  opacity: 1;
+}
+
+.tonicLine {
+  fill: none;
+  stroke: salmon;
+  stroke-width: 2;
+}
+
+.pitchLine {
+  fill: none;
+  stroke: salmon;
+  stroke-width: 1;
+  opacity: 0.5;
+}
+
+.measureLine {
+  fill: none;
+  stroke: lightgray;
+  stroke-width: 2;
+}
+
+.upbeatLine {
+  fill: none;
+  stroke: lightgray;
+  stroke-width: 1;
+  opacity: 0.5;
+}
+
+.yAxis {
+  font-size: 12px;
+}
+
+.xAxis {
+  font-size: 12px;
+}
