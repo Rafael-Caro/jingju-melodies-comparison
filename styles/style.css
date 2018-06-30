@@ -15,12 +15,25 @@ svg {
   /* border-style: inset; */
 }
 
+.gralBtns {
+  margin-top: 5px;
+  margin-bottom : 5px;
+}
+
+form {
+  margin-top: 10px;
+}
+
+input[type="button"] {
+  float: right;
+}
+
 .line {
   fill: none;
-  stroke: orange;
-  stroke-width: 8;
   stroke-linecap: round;
-  /* opacity: 0.2; */
+  /* stroke: orange;
+  stroke-width: 8;
+  opacity: 0.2; */
 }
 
 /* .line:hover {
