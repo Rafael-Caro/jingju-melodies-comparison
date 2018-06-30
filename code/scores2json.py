@@ -17,6 +17,8 @@ path = '../scores/'
 unit = 0.0625
 with open(path + 'lines_data.csv', 'r', encoding='utf-8') as f:
     linesData = f.readlines()
+with open(path + 'scores_data.csv', 'r', encoding='utf-8') as f:
+    scoresData = f.readlines()
 
 
 
@@ -112,14 +114,17 @@ def getNotes(aria, segments):
 
     melodies = []
 
-    ariaName = aria.split('/')[-1]
+    ariaPath = aria.split('/')[-1]
+    ariaName = ariaPath[:-4]
+    ariaTitle = scoresInfo[ariaName]
+    jsonFile['legend']['titles'].append({"id": ariaName, "title":ariaTitle})
     
     s = converter.parse(aria)
-    print('Parsing', ariaName)
+    print('Parsing', ariaPath)
     part = findVoiceParts(s)[0]
     notes = part.flat.notesAndRests.stream()
     for i in range(len(segments)):
-        melody = {'id':[ariaName[:-4], str(i)], 'melody':[]}
+        melody = {'id':[ariaName, str(i)], 'melody':[]}
         time = 0
         start = segments[i][0]
         end = segments[i][1]
@@ -164,10 +169,17 @@ def getNotes(aria, segments):
 
 
 # Main code
+scoresInfo = {}
+for sLine in scoresData:
+    sInfo = sLine.rstrip().split(',')
+    name = sInfo[0]
+    title = sInfo[1]
+    scoresInfo[name] = title
+
 arias = scoreLines(lines)
 
 jsonFile = {'title':'', 'melodies':[], 'legend':{'pitches':[], 'measures':[],
-            'upbeats':[]}}
+            'upbeats':[], 'titles':[]}}
 
 legend = {}
 

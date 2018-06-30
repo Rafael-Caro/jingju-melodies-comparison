@@ -7,10 +7,13 @@ d3.json("code/melodies.json").then(function(data) {
   console.log(data);
 
   var dataset = data.melodies;
-  var legend = data.legend;
+  var upbeats = data.legend.upbeats;
+  var measures = data.legend.measures;
+  var pitches = data.legend.pitches;
+  var titles = data.legend.titles;
 
-  if (legend.upbeats.length > 0) {
-    maxTime = d3.max(legend.upbeats, function(d) {return d;})
+  if (upbeats.length > 0) {
+    maxTime = d3.max(upbeats, function(d) {return d;})
   } else {
     d3.max(dataset, function(d) {
       return d3.max(d.melody, function(d) {
@@ -44,7 +47,7 @@ d3.json("code/melodies.json").then(function(data) {
   var xAxisValues = [];
   var xAxisLabels = [];
 
-  legend.measures.forEach(function(d) {
+  measures.forEach(function(d) {
     xAxisValues.push(d.time);
     xAxisLabels.push(d.value);
   });
@@ -59,7 +62,7 @@ d3.json("code/melodies.json").then(function(data) {
   var yAxisValues = [];
   var yAxisLabels = [];
 
-  legend.pitches.forEach(function(d) {
+  pitches.forEach(function(d) {
     yAxisValues.push(d.midi);
     yAxisLabels.push(d.name);
   });
@@ -117,7 +120,7 @@ d3.json("code/melodies.json").then(function(data) {
 
   // Upbeats lines
   svg.selectAll("upbeatLines")
-     .data(legend.upbeats)
+     .data(upbeats)
      .enter()
      .append("line")
      .attr("x1", function(d) {return xScale(d);})
@@ -148,17 +151,12 @@ d3.json("code/melodies.json").then(function(data) {
            .style("stroke", "orange")
            .style("stroke-width", 8);
        })
-
-    var div = form.append("div");
-
-    div.append("input")
-       .attr("class", "lineCheckbox")
-       .attr("type", "checkbox")
-       .attr("name", d.id[0] + "-" + (+d.id[1]+1))
-       .property("checked", true)
-
-    div.append("label")
-       .text(+d.id[1]+1);
+       .on("mouseover", function() {
+         d3.select(this)
+          .style("opacity", 1)
+          .style("stroke", "orangered")
+          .style("stroke-width", 12);
+       });
 
     checkedLines.push(d.id[0] + "-" + (+d.id[1]+1));
   });
@@ -173,13 +171,40 @@ d3.json("code/melodies.json").then(function(data) {
     .attr("transform", "translate(" + padding + ",0)")
     .call(yAxis);
 
-  d3.selectAll("path.line")
-    .on("mouseover", function() {
-      d3.select(this)
-        .style("opacity", 1)
-        .style("stroke", "orangered")
-        .style("stroke-width", 12);
+  // Buttons
+  titles.forEach(function(d) {
+    var div = form.append("div")
+
+    div.append("input")
+       .attr("class", "ariaCheckbox")
+       .attr("type", "checkbox")
+       .attr("name", d.id)
+       .property("checked", true)
+       .property("disabled", true);
+
+    div.append("label")
+       .text(d.title)
+
+    var btns = div.append("span")
+
+    var titleID = d.id;
+
+    dataset.forEach(function(d) {
+      var melodyID = d.id[0];
+      var melodyNumber = +d.id[1] + 1;
+      if (titleID == melodyID) {
+
+        btns.append("input")
+            .attr("class", "lineCheckbox")
+            .attr("type", "checkbox")
+            .attr("name", d.id[0] + "-" + (+d.id[1]+1))
+            .property("checked", true);
+
+        btns.append("label")
+            .text(melodyNumber);
+      };
     });
+  });
 
   var showCheckedLines = function() {
     opacity = Math.ceil(10 / checkedLines.length) / 10;
