@@ -12,7 +12,11 @@ import json
 
 
 # Assign global variables
-lines = [270, 272, 286, 288, 298, 300] # 302 
+daxpybs = [270, 272, 274, 276, 286, 288, 292, 294, 296, 298, 300, 302, 318,
+           320, 326, 328, 330]#, 354, 356]
+daxpybx = [271, 273, 275, 277, 287, 293, 295, 297, 299, 301, 303, 319,
+           321, 327, 329, 331]# 289: transition to sanban
+
 path = '../scores/'
 unit = 0.0625
 with open(path + 'lines_data.csv', 'r', encoding='utf-8') as f:
@@ -128,10 +132,12 @@ def getNotes(aria, segments):
     notes = part.flat.notesAndRests.stream()
     for i in range(len(segments)):
         melody = {'id':[ariaName, str(i)], 'melody':[], 'lyrics':[]}
-        time = 0
         start = segments[i][0]
         end = segments[i][1]
-        line = part.getElementsByOffset(start, end)#, mustBeginInSpan=False)
+#        print(start, end)
+        line = part.getElementsByOffset(start, end, mustBeginInSpan=False,
+                                        classList='Measure')
+        lineNotes = notes.getElementsByOffset(start, end)
         # Compute the measures and upbeats ticks
         m0 = line[0].offset
         mCount = 1
@@ -150,45 +156,30 @@ def getNotes(aria, segments):
         if md > 1:
             for i in range(1, md):
                 lines.append(mo + i)
-            # Compute the melody
-            notes = line.flat.notesAndRests.stream()
-            for n in notes:
-                dur = n.quarterLength
-                if dur > 0:
-                    if n.isNote:
-                        p = n.pitch.midi
-                        if p not in legend.keys():
-                            pName = n.name
-                            if pName not in jianpu.keys():
-                                print('WARNING:', pName, 'not in jianpu')
-                            else:
-                                legend[p] = jianpu[pName]
-                        if n.hasLyrics():
-                            l = n.lyric
-                            melody['lyrics'].append({'time':time, 'lyric':l})
-                    else:
-                        p = 0
-                    for i in range(int(dur / unit)):
-                        nota = {'time':time, 'pitch':p}
-                        melody['melody'].append(nota)
-                        time += unit
-            melodies.append(melody)
-#            # Compute the melody
-#            notes = line.flat.notesAndRests.stream()
-#            for n in notes:
-#                dur = n.quarterLength
-#                if dur > 0:
-#                    if n.isNote:
-#                        p = n.pitch.midi
-#                        if p not in legend.keys():
-#                            legend[p] = n.nameWithOctave
-#                    else:
-#                        p = 0
-#                    for i in range(int(dur / unit)):
-#                        nota = {'time':time, 'pitch':p}
-#                        melody['melody'].append(nota)
-#                        time += unit
-#            melodies.append(melody)
+        # Compute the melody
+#        notes = line.flat.notesAndRests.stream()
+        time = lineNotes[0].offset - m0        
+        for n in lineNotes:
+            dur = n.quarterLength
+            if dur > 0:
+                if n.isNote:
+                    p = n.pitch.midi
+                    if p not in legend.keys():
+                        pName = n.name
+                        if pName not in jianpu.keys():
+                            print('WARNING:', pName, 'not in jianpu')
+                        else:
+                            legend[p] = jianpu[pName]
+                    if n.hasLyrics():
+                        l = n.lyric
+                        melody['lyrics'].append({'time':time, 'lyric':l})
+                else:
+                    p = 0
+                for i in range(int(dur / unit)):
+                    nota = {'time':time, 'pitch':p}
+                    melody['melody'].append(nota)
+                    time += unit
+        melodies.append(melody)
 
     return melodies
 
@@ -202,7 +193,7 @@ for sLine in scoresData:
     title = sInfo[1]
     scoresInfo[name] = title
 
-arias = scoreLines(lines)
+arias = scoreLines(daxpybx)
 
 jsonFile = {'title':'', 'melodies':[], 'legend':{'pitches':[], 'measures':[],
             'upbeats':[], 'titles':[]}}
@@ -218,7 +209,7 @@ for p in sorted(legend.keys()):
 
 
 
-with open('melodies.json', 'w') as f:
+with open('daxpybx.json', 'w') as f:
     json.dump(jsonFile, f)
             
     

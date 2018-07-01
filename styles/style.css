@@ -29,6 +29,10 @@ form {
   margin-top: 10px;
 }
 
+.menu {
+  margin-bottom: 20px;
+}
+
 input[type="button"] {
   float: right;
 }
@@ -83,4 +87,8 @@ input[type="button"] {
 
 .hidden {
   display:none;
+}
+
+.lyrics {
+  font-size: 12px;
 }
