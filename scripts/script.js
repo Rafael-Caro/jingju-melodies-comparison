@@ -1,6 +1,9 @@
 var w = 800;
 var h = 350;
-var padding = 40;
+var paddingTop = 60;
+var paddingBottom = 30;
+var paddingLeft = 30;
+var paddingRight = 20;
 
 d3.json("code/melodies.json").then(function(data) {
 
@@ -38,11 +41,11 @@ d3.json("code/melodies.json").then(function(data) {
 
   var xScale = d3.scaleLinear()
                  .domain([0, maxTime])
-                 .range([padding, w-padding]);
+                 .range([paddingLeft, w-paddingRight]);
 
   var yScale = d3.scaleLinear()
                  .domain([minPitch, maxPitch])
-                 .range([h-padding, padding]);
+                 .range([h-paddingBottom, paddingTop]);
 
   var xAxisValues = [];
   var xAxisLabels = [];
@@ -98,8 +101,8 @@ d3.json("code/melodies.json").then(function(data) {
      .data(yAxisValues)
      .enter()
      .append("line")
-     .attr("x1", padding)
-     .attr("x2", w-padding)
+     .attr("x1", paddingLeft)
+     .attr("x2", w-paddingRight)
      .attr("y1", function(d) {return yScale(d);})
      .attr("y2", function(d) {return yScale(d);})
      .attr("class", function(d) {
@@ -117,8 +120,8 @@ d3.json("code/melodies.json").then(function(data) {
      .append("line")
      .attr("x1", function(d) {return xScale(d);})
      .attr("x2", function(d) {return xScale(d);})
-     .attr("y1", padding)
-     .attr("y2", h-padding)
+     .attr("y1", paddingTop)
+     .attr("y2", h-paddingBottom)
      .attr("class", "measureLine");
 
   // Upbeats lines
@@ -128,8 +131,8 @@ d3.json("code/melodies.json").then(function(data) {
      .append("line")
      .attr("x1", function(d) {return xScale(d);})
      .attr("x2", function(d) {return xScale(d);})
-     .attr("y1", padding)
-     .attr("y2", h-padding)
+     .attr("y1", paddingTop)
+     .attr("y2", h-paddingBottom)
      .attr("class", "upbeatLine");
 
   var checkedLines = [];
@@ -173,12 +176,12 @@ d3.json("code/melodies.json").then(function(data) {
 
   svg.append("g")
     .attr("class", "xAxis")
-    .attr("transform", "translate(0," + (h - padding) + ")")
+    .attr("transform", "translate(0," + (h - paddingBottom) + ")")
     .call(xAxis);
 
   svg.append("g")
     .attr("class", "yAxis")
-    .attr("transform", "translate(" + padding + ",0)")
+    .attr("transform", "translate(" + paddingLeft + ",0)")
     .call(yAxis);
 
   // General Buttons
@@ -291,7 +294,9 @@ d3.json("code/melodies.json").then(function(data) {
         var lineValue = d3.select(this).property("checked");
         allTrue.push(lineValue);
       });
-      if (!allTrue.includes(false)) {
+      if (allTrue.includes(false)) {
+        ariaCheckbox.property("checked", false);
+      } else {
         ariaCheckbox.property("checked", true);
       };
     });

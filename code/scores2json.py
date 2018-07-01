@@ -132,7 +132,7 @@ def getNotes(aria, segments):
         # Compute the measures and upbeats ticks
         m0 = line[0].offset
         mCount = 1
-        for m in line[:-1]:
+        for m in line:
             mo = int(m.offset - m0)
             measure = {'time': mo, 'value': mCount}
             if measure not in jsonFile['legend']['measures']:
