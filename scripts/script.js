@@ -169,6 +169,18 @@ d3.json("code/melodies.json").then(function(data) {
        });
 
     checkedLines.push(ariaID + "-" + (+d.id[1]+1));
+
+    d.lyrics.forEach(function(d) {
+      var time = xScale(+d.time);
+      var lyric = d.lyric;
+      svg.append("text")
+         .attr("class", "lyrics")
+         .attr("data-lineID", lineID)
+         .attr("x", time)
+         .attr("y", h-paddingBottom-5)
+         .text(lyric)
+         .classed("hidden", true);
+    });
   });
 
   svg.append("g")
@@ -269,6 +281,9 @@ d3.json("code/melodies.json").then(function(data) {
       .text(title)
       .classed("hidden", false);
 
+    d3.selectAll(".lyrics[data-lineID='" + lineID + "']")
+      .classed("hidden", false);
+
     d3.select("label.ariaLabel[data-ariaID='" + ariaID + "']")
       .style("background-color", "rgba(255, 165, 0, 0.5)");
 
@@ -283,6 +298,9 @@ d3.json("code/melodies.json").then(function(data) {
                   .style("stroke-width", 8);
 
     d3.select(".title")
+      .classed("hidden", true);
+
+    d3.selectAll(".lyrics[data-lineID='" + lineID + "']")
       .classed("hidden", true);
 
     d3.select("label.ariaLabel[data-ariaID='" + ariaID + "']")

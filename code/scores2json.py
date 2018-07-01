@@ -127,11 +127,11 @@ def getNotes(aria, segments):
     part = findVoiceParts(s)[0]
     notes = part.flat.notesAndRests.stream()
     for i in range(len(segments)):
-        melody = {'id':[ariaName, str(i)], 'melody':[]}
+        melody = {'id':[ariaName, str(i)], 'melody':[], 'lyrics':[]}
         time = 0
         start = segments[i][0]
         end = segments[i][1]
-        line = part.getElementsByOffset(start, end, mustBeginInSpan=False)
+        line = part.getElementsByOffset(start, end)#, mustBeginInSpan=False)
         # Compute the measures and upbeats ticks
         m0 = line[0].offset
         mCount = 1
@@ -163,6 +163,9 @@ def getNotes(aria, segments):
                                 print('WARNING:', pName, 'not in jianpu')
                             else:
                                 legend[p] = jianpu[pName]
+                        if n.hasLyrics():
+                            l = n.lyric
+                            melody['lyrics'].append({'time':time, 'lyric':l})
                     else:
                         p = 0
                     for i in range(int(dur / unit)):
