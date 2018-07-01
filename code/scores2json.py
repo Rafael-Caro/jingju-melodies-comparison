@@ -105,6 +105,9 @@ def scoreLines(lines):
 
 
 
+jianpu = {'E':'1', 'F#':'2', 'G#':'3', 'A':'4', 'A#':'4#', 'B':'5', 'C#':'6',
+          'D#':'7'}
+
 def getNotes(aria, segments):
     '''
     str, [[float, float]] --> [[[float, int]]]
@@ -155,7 +158,11 @@ def getNotes(aria, segments):
                     if n.isNote:
                         p = n.pitch.midi
                         if p not in legend.keys():
-                            legend[p] = n.nameWithOctave
+                            pName = n.name
+                            if pName not in jianpu.keys():
+                                print('WARNING:', pName, 'not in jianpu')
+                            else:
+                                legend[p] = jianpu[pName]
                     else:
                         p = 0
                     for i in range(int(dur / unit)):
@@ -163,6 +170,22 @@ def getNotes(aria, segments):
                         melody['melody'].append(nota)
                         time += unit
             melodies.append(melody)
+#            # Compute the melody
+#            notes = line.flat.notesAndRests.stream()
+#            for n in notes:
+#                dur = n.quarterLength
+#                if dur > 0:
+#                    if n.isNote:
+#                        p = n.pitch.midi
+#                        if p not in legend.keys():
+#                            legend[p] = n.nameWithOctave
+#                    else:
+#                        p = 0
+#                    for i in range(int(dur / unit)):
+#                        nota = {'time':time, 'pitch':p}
+#                        melody['melody'].append(nota)
+#                        time += unit
+#            melodies.append(melody)
 
     return melodies
 

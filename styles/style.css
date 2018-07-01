@@ -16,8 +16,13 @@ svg {
 }
 
 .gralBtns {
+  height: 20px;
   margin-top: 5px;
   margin-bottom : 5px;
+}
+
+.buttonsRow {
+  margin-bottom: 5px;
 }
 
 form {
@@ -69,9 +74,13 @@ input[type="button"] {
 }
 
 .yAxis {
-  font-size: 12px;
+  font-size: 15px;
 }
 
 .xAxis {
-  font-size: 12px;
+  font-size: 15px;
+}
+
+.hidden {
+  display:none;
 }

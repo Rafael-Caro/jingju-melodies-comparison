@@ -1,9 +1,12 @@
 var w = 800;
 var h = 350;
-var paddingTop = 60;
+var paddingTop = 40;
 var paddingBottom = 30;
 var paddingLeft = 30;
 var paddingRight = 20;
+var lineCheckboxLeft = 600;
+var lineCheckboxSpacing = 50;
+// var opacity;
 
 d3.json("code/melodies.json").then(function(data) {
 
@@ -145,7 +148,7 @@ d3.json("code/melodies.json").then(function(data) {
     var title;
     titles.forEach(function(d) {
       if (d.id == ariaID) {
-        title = d.title + "-" + lineNumber;
+        title = d.title + lineNumber;
       };
     });
     svg.append("path")
@@ -159,16 +162,10 @@ d3.json("code/melodies.json").then(function(data) {
        .style("stroke", "orange")
        .style("stroke-width", 8)
        .on("mouseover", function() {
-         d3.select(this)
-           .style("opacity", 0.8)
-           .style("stroke", "orangered")
-           .style("stroke-width", 12);
+         highlightLine(ariaID, lineID);
        })
        .on("mouseout", function() {
-         d3.select(this)
-           .style("opacity", opacity)
-           .style("stroke", "orange")
-           .style("stroke-width", 8);
+         anonymizeLine(ariaID, lineID);
        });
 
     checkedLines.push(ariaID + "-" + (+d.id[1]+1));
@@ -183,6 +180,11 @@ d3.json("code/melodies.json").then(function(data) {
     .attr("class", "yAxis")
     .attr("transform", "translate(" + paddingLeft + ",0)")
     .call(yAxis);
+
+  svg.append("text")
+     .attr("class", "title")
+     .attr("x", paddingLeft)
+     .attr("y", paddingTop-15);
 
   // General Buttons
   gralBtns.append("input")
@@ -206,6 +208,7 @@ d3.json("code/melodies.json").then(function(data) {
   // Buttons
   titles.forEach(function(d) {
     var div = form.append("div")
+                  .attr("class", "buttonsRow");
 
     div.append("input")
        .attr("class", "ariaCheckbox")
@@ -215,6 +218,8 @@ d3.json("code/melodies.json").then(function(data) {
        // .property("disabled", true);
 
     div.append("label")
+       .attr("class", "ariaLabel")
+       .attr("data-ariaID", d.id)
        .text(d.title)
 
     // var btns = div.append("span")
@@ -222,22 +227,70 @@ d3.json("code/melodies.json").then(function(data) {
     var titleID = d.id;
 
     dataset.forEach(function(d) {
-      var melodyID = d.id[0];
-      var melodyNumber = +d.id[1] + 1;
-      if (titleID == melodyID) {
+      var ariaID = d.id[0]
+      var lineNumber = +d.id[1]+1
+      var lineID = ariaID + "-" + lineNumber;
+      // var melodyID = d.id[0];
+      // var melodyNumber = +d.id[1] + 1;
+      if (titleID == ariaID) {
 
         div.append("input")
             .attr("class", "lineCheckbox")
-            .attr("data-ariaID", d.id[0])
-            .attr("data-lineID", d.id[0] + "-" + (+d.id[1]+1))
+            .attr("data-ariaID", ariaID)
+            .attr("data-lineID", lineID)
             .attr("type", "checkbox")
+            // .attr("position", "absolute")
+            // .attr("left", (lineCheckboxLeft + (lineCheckboxSpacing * lineNumber)) + "px")
             .property("checked", true);
 
         div.append("label")
-            .text(melodyNumber);
+           .attr("class", "lineLabel")
+           .attr("data-lineID", lineID)
+           .text(lineNumber)
+           .on("mouseover", function() {
+             highlightLine(ariaID, lineID);
+           })
+           .on("mouseout", function() {
+             anonymizeLine(ariaID, lineID);
+           });
       };
     });
   });
+
+  // Utilities functions
+  var highlightLine = function(ariaID, lineID) {
+    var title = d3.select("path.line[data-lineID='" + lineID + "']")
+                  .style("opacity", 0.8)
+                  .style("stroke", "orangered")
+                  .style("stroke-width", 10)
+                  .attr("data-title");
+
+    d3.select(".title")
+      .text(title)
+      .classed("hidden", false);
+
+    d3.select("label.ariaLabel[data-ariaID='" + ariaID + "']")
+      .style("background-color", "rgba(255, 165, 0, 0.5)");
+
+    d3.select("label.lineLabel[data-lineID='" + lineID + "']")
+      .style("background-color", "rgba(255, 165, 0, 0.5)");
+  };
+
+  var anonymizeLine = function(ariaID, lineID) {
+    d3.select("path.line[data-lineID='" + lineID + "']")
+                  .style("opacity", opacity)
+                  .style("stroke", "orange")
+                  .style("stroke-width", 8);
+
+    d3.select(".title")
+      .classed("hidden", true);
+
+    d3.select("label.ariaLabel[data-ariaID='" + ariaID + "']")
+      .style("background-color", "transparent");
+
+    d3.select("label.lineLabel[data-lineID='" + lineID + "']")
+      .style("background-color", "transparent");
+  };
 
   var showCheckedLines = function() {
     opacity = Math.ceil(10 / checkedLines.length) / 10;
@@ -246,15 +299,15 @@ d3.json("code/melodies.json").then(function(data) {
         var line = d3.select(this);
         var lineID = line.attr("data-lineID")
         if (checkedLines.includes(lineID)) {
-          line.style("opacity", opacity)
-          line.style("pointer-events", "auto");
+          line.classed("hidden", false)
+          line.style("opacity", opacity);
         } else {
-          line.style("opacity", 0)
-          line.style("pointer-events", "none");
+          line.classed("hidden", true);
         }
       });
     };
 
+  // Control buttons
   d3.selectAll("input.ariaCheckbox")
     .on("change", function() {
       var ariaValue = d3.select(this).property("checked");

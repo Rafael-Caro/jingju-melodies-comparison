@@ -12379,31 +12379,31 @@
     ],
     "pitches": [
       {
-        "name": "G#4",
+        "name": "3",
         "midi": 68
       },
       {
-        "name": "B4",
+        "name": "5",
         "midi": 71
       },
       {
-        "name": "C#5",
+        "name": "6",
         "midi": 73
       },
       {
-        "name": "D#5",
+        "name": "7",
         "midi": 75
       },
       {
-        "name": "E5",
+        "name": "1",
         "midi": 76
       },
       {
-        "name": "F#5",
+        "name": "2",
         "midi": 78
       },
       {
-        "name": "G#5",
+        "name": "3",
         "midi": 80
       }
     ],
