@@ -1,16 +1,11 @@
 var w = 800;
 var h = 350;
 var paddingTop = 40;
-var paddingBottom = 30;
+var paddingBottom = 20;
 var paddingLeft = 30;
 var paddingRight = 20;
 var lineCheckboxLeft = 600;
 var lineCheckboxSpacing = 50;
-
-var daxpybs = "code/daxpybs.json";
-var daxpybx;
-var lsxpybs;
-var lsxpybx;
 
 var jingjuLinesComparison = function(dataFile) {
   d3.json(dataFile).then(function(data) {
@@ -25,15 +20,25 @@ var jingjuLinesComparison = function(dataFile) {
     var pitches = data.legend.pitches;
     var titles = data.legend.titles;
 
+    var maxTMeasure = d3.max(measures, function(d) {
+      return d.time
+    });
+
+    var maxTUpbeat;
     if (upbeats.length > 0) {
-      maxTime = d3.max(upbeats, function(d) {return d;})
+      maxTUpbeat = d3.max(upbeats, function (d) {return d;});
     } else {
-      d3.max(dataset, function(d) {
-        return d3.max(d.melody, function(d) {
-          return d.time;
-        });
-      });
+      maxTUpbeat = 0;
     };
+
+    var maxTMelody = d3.max(dataset, function (d) {
+      var melody = d.melody;
+      return d3.max(melody, function (d) {
+        return Math.ceil(d.time);
+      });
+    });
+
+    var maxTime = d3.max([maxTMeasure, maxTUpbeat, maxTMelody]);
 
     var minPitch = -2 + d3.min(dataset, function(d) {
       return d3.min(d.melody, function(d) {
@@ -221,6 +226,23 @@ var jingjuLinesComparison = function(dataFile) {
                 if (lineValue == false) {
                   d3.select(this).property("checked", true);
                   checkedLines.push(lineID);
+                };
+              });
+            showCheckedLines();
+            });
+
+    gralBtns.append("input")
+            .attr("type", "button")
+            .attr("value", "None")
+            .on("click", function() {
+              d3.selectAll("input.ariaCheckbox").property("checked", false);
+              d3.selectAll("input.lineCheckbox").each(function() {
+                var thisCheckbox = d3.select(this);
+                var lineValue = thisCheckbox.property("checked");
+                var lineID = thisCheckbox.attr("data-lineID");
+                if (lineValue == true) {
+                  d3.select(this).property("checked", false);
+                  checkedLines.splice(lineID, 1);
                 };
               });
             showCheckedLines();

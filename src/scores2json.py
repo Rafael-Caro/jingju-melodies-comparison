@@ -12,10 +12,13 @@ import json
 
 
 # Assign global variables
-daxpybs = [270, 272, 274, 276, 286, 288, 292, 294, 296, 298, 300, 302, 318,
-           320, 326, 328, 330]#, 354, 356]
+daxpybs = [270, 272, 274, 276, 286, 288, 292, 294, 296, 298, 300, 318, 320,
+           326, 328, 330]#, 302, 354, 356]
 daxpybx = [271, 273, 275, 277, 287, 293, 295, 297, 299, 301, 303, 319,
-           321, 327, 329, 331]# 289: transition to sanban
+           321, 327, 329, 331]# 289
+lsxpybs = [660, 684, 686, 688, 690, 692, 694, 700, 768, 770, 774, 800] #696, 796, 802, 804， 806
+lsxpybx = [685, 687, 689, 691, 693, 695, 701, 703, 739, 749, 767, 769, 771,
+           773]#661, 663, 689, 697, 699, 797, 799, 801, 803, 805, 807
 
 path = '../scores/'
 unit = 0.0625
@@ -137,6 +140,7 @@ def getNotes(aria, segments):
 #        print(start, end)
         line = part.getElementsByOffset(start, end, mustBeginInSpan=False,
                                         classList='Measure')
+#        line.show()
         lineNotes = notes.getElementsByOffset(start, end)
         # Compute the measures and upbeats ticks
         m0 = line[0].offset
@@ -147,17 +151,14 @@ def getNotes(aria, segments):
             if measure not in jsonFile['legend']['measures']:
                 jsonFile['legend']['measures'].append(measure)
             mCount += 1
-            md = m.duration.ordinal
+            md = int(m.duration.quarterLength)
             if md > 1:
                 for i in range(1, md):
                     upbeat = mo + i
                     if upbeat not in jsonFile['legend']['upbeats']:
                         jsonFile['legend']['upbeats'].append(upbeat)
-        if md > 1:
-            for i in range(1, md):
-                lines.append(mo + i)
+                        
         # Compute the melody
-#        notes = line.flat.notesAndRests.stream()
         time = lineNotes[0].offset - m0        
         for n in lineNotes:
             dur = n.quarterLength
@@ -193,7 +194,7 @@ for sLine in scoresData:
     title = sInfo[1]
     scoresInfo[name] = title
 
-arias = scoreLines(daxpybx)
+arias = scoreLines(daxpybs)
 
 jsonFile = {'title':'', 'melodies':[], 'legend':{'pitches':[], 'measures':[],
             'upbeats':[], 'titles':[]}}
@@ -209,7 +210,7 @@ for p in sorted(legend.keys()):
 
 
 
-with open('daxpybx.json', 'w') as f:
+with open('daxpybs.json', 'w') as f:
     json.dump(jsonFile, f)
             
     
