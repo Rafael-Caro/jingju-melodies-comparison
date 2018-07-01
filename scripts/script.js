@@ -15,6 +15,10 @@ var lsxpybx;
 var jingjuLinesComparison = function(dataFile) {
   d3.json(dataFile).then(function(data) {
 
+    d3.select("svg").remove();
+    d3.select("div.gralBtns").remove();
+    d3.select("form.ariasAndLines").remove();
+
     var dataset = data.melodies;
     var upbeats = data.legend.upbeats;
     var measures = data.legend.measures;
@@ -100,7 +104,8 @@ var jingjuLinesComparison = function(dataFile) {
     var gralBtns = body.append("div")
                        .attr("class", "gralBtns");
 
-    var form = body.append("form");
+    var form = body.append("form")
+                   .attr("class", "ariasAndLines");
 
     // Pitch lines
     svg.selectAll("pitchLines")
@@ -279,7 +284,7 @@ var jingjuLinesComparison = function(dataFile) {
       var title = d3.select("path.line[data-lineID='" + lineID + "']")
                     .style("opacity", 0.8)
                     .style("stroke", "orangered")
-                    .style("stroke-width", 10)
+                    .style("stroke-width", 8)
                     .attr("data-title");
 
       d3.select(".title")
@@ -379,12 +384,11 @@ var jingjuLinesComparison = function(dataFile) {
   });
 };
 
-// var defaultFile = d3.select("input[type='radio']:checked").property("value")
-// jingjuLinesComparison(defaultFile);
+var defaultFile = d3.select("input[type='radio']:checked").property("value")
+jingjuLinesComparison(defaultFile);
 
 d3.selectAll("input[type='radio']")
   .on("click", function() {
     var fileName = d3.select(this).property("value");
-    console.log(fileName);
     jingjuLinesComparison(fileName);
   });
