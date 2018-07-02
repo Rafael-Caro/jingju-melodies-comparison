@@ -3,39 +3,59 @@
 	<head>
 
 		<meta charset="utf-8">
-		<title>Jingju Melodic Lines</title>
+		<title>Comparison of jingju melodic lines</title>
 		<link href="styles/style.css" rel="stylesheet" type="text/css">
 		<script type="text/javascript" src="scripts/d3.min.js"></script>
 		<script type="text/javascript" src="scripts/script.js" async></script>
+		<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 
 	</head>
 
 	<body>
 
-		<h1>Comparison of jingju singing lines</h1>
+		<div class=container>
+			<h1>Comparison of jingju singing lines</h1>
 
-		<form class="menu">
-			<div class="option">
-				<input type="radio" name="options" value="src/daxpybs.json" checked/>
-				<label><i>Dan xipi yuanban</i> opening lines</label>
+			<div class="menu">
+				<div class="option">
+					<input type="radio" name="options" value="src/daxpybs.json" checked/>
+					<label><i>Dan xipi yuanban</i> opening lines</label>
+				</div>
+
+				<div class="option">
+					<input type="radio" name="options" value="src/daxpybx.json" />
+					<label><i>Dan xipi yuanban</i> closing lines</label>
+				</div>
+
+				<div class="option">
+					<input type="radio" name="options" value="src/lsxpybs.json" />
+					<label><i>Laosheng xipi yuanban</i> opening lines</label>
+				</div>
+
+				<div class="option">
+					<input type="radio" name="options" value="src/lsxpybx.json" />
+					<label><i>Laosheng xipi yuanban</i> closing lines</label>
+				</div>
 			</div>
 
-			<div class="option">
-				<input type="radio" name="options" value="src/daxpybx.json" />
-				<label><i>Dan xipi yuanban</i> closing lines</label>
+			<div class=chart>
 			</div>
 
-			<div class="option">
-				<input type="radio" name="options" value="src/lsxpybs.json" />
-				<label><i>Laosheng xipi yuanban</i> opening lines</label>
+			<div class=lines>
 			</div>
 
-			<div class="option">
-				<input type="radio" name="options" value="src/lsxpybx.json" />
-				<label><i>Laosheng xipi yuanban</i> closing lines</label>
-			</div>
-		</form>
+			<footer>
+				<p>Done by Rafael Caro Repetto, within the
+				<a href="https://www.upf.edu/web/musicalbridges"
+				title="Musical Bridges" target="_blank">Musical Bridges</a> project
+				(Music Technology	Group, Universitat Poempeu Fabra, Barcelona)</p>
 
-		</script>
+				<p>This tool is inspired in Christopher Witulski's
+				<a href="https://cjwit.github.io/malhun-contour/index.html"
+				title="Christopher Witulski's '68 Melodic Contours from Malhun'"
+				target="_blank">
+				"68 Melodic Contours from Malhun"</a></p>
+			</footer>
+		</div>
 	</body>
 </html>

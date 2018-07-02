@@ -1,18 +1,18 @@
 var w = 800;
-var h = 350;
-var paddingTop = 40;
-var paddingBottom = 20;
-var paddingLeft = 30;
-var paddingRight = 20;
-var lineCheckboxLeft = 600;
-var lineCheckboxSpacing = 50;
+var h = 300;
+var paddingTop = 25;
+var paddingBottom = 35;
+var paddingLeft = 35;
+var paddingRight = 15;
+var linesColumns = 9;
+var linesRows = 10;
 
 var jingjuLinesComparison = function(dataFile) {
   d3.json(dataFile).then(function(data) {
 
     d3.select("svg").remove();
-    d3.select("div.gralBtns").remove();
-    d3.select("form.ariasAndLines").remove();
+    d3.select(".gralBtns").remove();
+    d3.selectAll(".lineSelector").remove();
 
     var dataset = data.melodies;
     var upbeats = data.legend.upbeats;
@@ -100,17 +100,24 @@ var jingjuLinesComparison = function(dataFile) {
 
     var opacity = Math.ceil(10 / dataset.length) / 10;
 
-    var body = d3.select("body");
+    var chart = d3.select(".chart");
 
-    var svg = body.append("svg")
+    var svg = chart.append("svg")
                   .attr("width", w)
                   .attr("height", h);
 
-    var gralBtns = body.append("div")
+    var gralBtns = chart.append("div")
                        .attr("class", "gralBtns");
 
-    var form = body.append("form")
-                   .attr("class", "ariasAndLines");
+    var lines = d3.select(".lines")
+
+    for (var row = 0; row < linesRows; row++) {
+      for (var column = 0; column < linesColumns; column++) {
+        lines.append("div")
+             .attr("class", "lineSelector")
+             .attr("id", "rc-" + row + "-" + column);
+      }
+    };
 
     // Pitch lines
     svg.selectAll("pitchLines")
@@ -209,9 +216,25 @@ var jingjuLinesComparison = function(dataFile) {
       .call(yAxis);
 
     svg.append("text")
+       .attr("class", "yAxisLabel")
+       .attr("text-anchor", "middle")
+       .attr("alignment-baseline", "middle")
+       .attr("transform", "rotate(270, 6, " + (h-paddingBottom-35) + ")")
+       .attr("x", 6)
+       .attr("y", h-paddingBottom-35)
+       .text("Scale degrees");
+
+   svg.append("text")
+      .attr("class", "xAxisLabel")
+      .attr("x", paddingLeft)
+      .attr("y", h)
+      .text("Measures");
+
+    svg.append("text")
        .attr("class", "title")
        .attr("x", paddingLeft)
-       .attr("y", paddingTop-15);
+       .attr("y", 0)
+       .attr("alignment-baseline", "hanging");
 
     // General Buttons
     gralBtns.append("input")
@@ -250,41 +273,40 @@ var jingjuLinesComparison = function(dataFile) {
 
 
     // Buttons
-    titles.forEach(function(d) {
-      var div = form.append("div")
-                    .attr("class", "buttonsRow");
+    // titles.forEach(function(d, i) {
+    for (var i = 0; i < titles.length; i++) {
+      var row = i;
+      var div = d3.select("#rc-" + row + "-0");
 
       div.append("input")
          .attr("class", "ariaCheckbox")
-         .attr("data-ariaID", d.id)
+         .attr("data-ariaID", titles[i].id)
          .attr("type", "checkbox")
          .property("checked", true);
-         // .property("disabled", true);
 
       div.append("label")
          .attr("class", "ariaLabel")
-         .attr("data-ariaID", d.id)
-         .text(d.title)
+         .attr("data-ariaID", titles[i].id)
+         .text(titles[i].title)
 
-      // var btns = div.append("span")
+      var titleID = titles[i].id;
 
-      var titleID = d.id;
+      var column = 1;
 
-      dataset.forEach(function(d) {
-        var ariaID = d.id[0]
-        var lineNumber = +d.id[1]+1
+      dataset.forEach(function(d, i) {
+        var ariaID = d.id[0];
+        var lineNumber = +d.id[1]+1;
         var lineID = ariaID + "-" + lineNumber;
-        // var melodyID = d.id[0];
-        // var melodyNumber = +d.id[1] + 1;
+
         if (titleID == ariaID) {
+
+          var div = d3.select("#rc-" + row + "-" + column);
 
           div.append("input")
               .attr("class", "lineCheckbox")
               .attr("data-ariaID", ariaID)
               .attr("data-lineID", lineID)
               .attr("type", "checkbox")
-              // .attr("position", "absolute")
-              // .attr("left", (lineCheckboxLeft + (lineCheckboxSpacing * lineNumber)) + "px")
               .property("checked", true);
 
           div.append("label")
@@ -297,9 +319,10 @@ var jingjuLinesComparison = function(dataFile) {
              .on("mouseout", function() {
                anonymizeLine(ariaID, lineID);
              });
+          column++;
         };
       });
-    });
+    };
 
     // Utilities functions
     var highlightLine = function(ariaID, lineID) {
