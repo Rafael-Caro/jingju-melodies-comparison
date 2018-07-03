@@ -115,7 +115,8 @@ var jingjuLinesComparison = function(dataFile) {
       for (var column = 0; column < linesColumns; column++) {
         lines.append("div")
              .attr("class", "lineSelector")
-             .attr("id", "rc-" + row + "-" + column);
+             .attr("data-row", row)
+             .attr("data-column", column);
       }
     };
 
@@ -276,18 +277,20 @@ var jingjuLinesComparison = function(dataFile) {
     // titles.forEach(function(d, i) {
     for (var i = 0; i < titles.length; i++) {
       var row = i;
-      var div = d3.select("#rc-" + row + "-0");
+      var ariaID = titles[i].id;
+      var div = d3.select(".lineSelector[data-row='" + row + "'][data-column='0']");
 
       div.append("input")
          .attr("class", "ariaCheckbox")
-         .attr("data-ariaID", titles[i].id)
+         .attr("data-ariaID", ariaID)
+         .attr("data-row", row)
          .attr("type", "checkbox")
          .property("checked", true);
 
       div.append("label")
          .attr("class", "ariaLabel")
-         .attr("data-ariaID", titles[i].id)
-         .text(titles[i].title)
+         .attr("data-ariaID", ariaID)
+         .text(titles[i].title);
 
       var titleID = titles[i].id;
 
@@ -300,12 +303,13 @@ var jingjuLinesComparison = function(dataFile) {
 
         if (titleID == ariaID) {
 
-          var div = d3.select("#rc-" + row + "-" + column);
+          var div = d3.select(".lineSelector[data-row='" + row + "'][data-column='" + column + "']");
 
           div.append("input")
               .attr("class", "lineCheckbox")
               .attr("data-ariaID", ariaID)
               .attr("data-lineID", lineID)
+              .attr("data-row", row)
               .attr("type", "checkbox")
               .property("checked", true);
 
@@ -383,22 +387,24 @@ var jingjuLinesComparison = function(dataFile) {
     // Control buttons
     d3.selectAll("input.ariaCheckbox")
       .on("change", function() {
-        var ariaValue = d3.select(this).property("checked");
-        d3.select(this.parentNode).selectAll(".lineCheckbox").each(function() {
-          var thisCheckbox = d3.select(this);
-          var lineValue = thisCheckbox.property("checked");
-          var lineID = thisCheckbox.attr("data-lineID");
+        var ariaCheckbox = d3.select(this);
+        var ariaValue = ariaCheckbox.property("checked");
+        var row = ariaCheckbox.attr("data-row");
+        d3.selectAll(".lineCheckbox[data-row='" + row + "']").each(function() {
+          var lineCheckbox = d3.select(this);
+          var lineValue = lineCheckbox.property("checked");
+          var lineID = lineCheckbox.attr("data-lineID");
           if (ariaValue) {
             if (lineValue == false) {
-              thisCheckbox.property("checked", true);
+              lineCheckbox.property("checked", true);
               checkedLines.push(lineID);
-            }
+            };
           } else {
             if (lineValue) {
-              thisCheckbox.property("checked", false);
+              lineCheckbox.property("checked", false);
               var index = checkedLines.indexOf(lineID);
               checkedLines.splice(index, 1);
-            }
+            };
           };
           showCheckedLines();
         });
@@ -407,6 +413,7 @@ var jingjuLinesComparison = function(dataFile) {
     d3.selectAll(".lineCheckbox")
       .on("change", function() {
         var lineID = d3.select(this).attr("data-lineID");
+        var row = d3.select(this).attr("data-row");
         if (checkedLines.includes(lineID)) {
           var index = checkedLines.indexOf(lineID);
           checkedLines.splice(index, 1);
@@ -414,9 +421,9 @@ var jingjuLinesComparison = function(dataFile) {
           checkedLines.push(lineID);
         };
         showCheckedLines();
-        var ariaCheckbox = d3.select(this.parentNode).select(".ariaCheckbox");
+        var ariaCheckbox = d3.select(".ariaCheckbox[data-row='" + row + "']");
         var allTrue = [];
-        d3.select(this.parentNode).selectAll(".lineCheckbox").each(function() {
+        d3.selectAll(".lineCheckbox[data-row='" + row + "']").each(function() {
           var lineValue = d3.select(this).property("checked");
           allTrue.push(lineValue);
         });
