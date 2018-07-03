@@ -330,11 +330,18 @@ var jingjuLinesComparison = function(dataFile) {
 
     // Utilities functions
     var highlightLine = function(ariaID, lineID) {
-      var title = d3.select("path.line[data-lineID='" + lineID + "']")
-                    .style("opacity", 0.8)
-                    .style("stroke", "orangered")
-                    .style("stroke-width", 8)
-                    .attr("data-title");
+      var line = d3.select("path.line[data-lineID='" + lineID + "']")
+      var title = line.attr("data-title");
+      // var hidden = line.classed("hidden");
+
+      if (line.classed("hidden")) {
+        line.classed("hidden", false);
+      };
+
+      line.style("opacity", 0.8)
+          .style("stroke", "orangered")
+          .style("stroke-width", 8)
+
 
       d3.select(".title")
         .text(title)
@@ -351,10 +358,15 @@ var jingjuLinesComparison = function(dataFile) {
     };
 
     var anonymizeLine = function(ariaID, lineID) {
-      d3.select("path.line[data-lineID='" + lineID + "']")
-                    .style("opacity", opacity)
-                    .style("stroke", "orange")
-                    .style("stroke-width", 8);
+      var line = d3.select("path.line[data-lineID='" + lineID + "']")
+
+      if (!(checkedLines.includes(lineID))) {
+        line.classed("hidden", true);
+      };
+
+      line.style("opacity", opacity)
+          .style("stroke", "orange")
+          .style("stroke-width", 8);
 
       d3.select(".title")
         .classed("hidden", true);
